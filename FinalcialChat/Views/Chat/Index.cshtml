@@ -1,0 +1,99 @@
+﻿@model FinalcialChat.Dtos.ChatDto
+
+<style>
+    #content {
+        height: 83vh;
+    }
+
+    #rooms .room-name {
+        padding: 10px;
+    }
+
+        #rooms .room-name.room-active {
+            background-color: bisque;
+        }
+
+    #sendMessageContainer {
+        position: absolute;
+        bottom: 10px;
+        left: 25px;
+        width: 100%;
+    }
+
+        #sendMessageContainer input {
+            max-width: 80%
+        }
+</style>
+
+<div id="content">
+    <div class="row h-100">
+        <div class="col-sm-4 h-100">
+            <div id="rooms" class="rooms border border-primary  h-100">
+                <div class="text-center mb-2">
+                    <h1>Rooms</h1>
+                    <button onclick="addRoom()" class="btn btn-primary">Add</button>
+                </div>
+                @foreach (var room in Model.Chatrooms)
+                {
+                    var activeRoomClass = @room.Id == @Model.SelectedRoomId ? "room-active" : "";
+                    <div class="room-name @activeRoomClass">
+                        <a href="?chatRoomId=@room.Id">
+                            <span>@room.Name</span>
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-sm-8 h-100">
+            <div id="messageList" class="messages border border-secondary h-100 overflow-auto pb-5">
+                @foreach (var message in Model.Messages)
+                {
+                    <div>
+                        <h2>@message.Content</h2>
+                        <div>
+                            <p>@message.CreatedBy</p>
+                            <p>@message.CreatedDate</p>
+                        </div>
+                    </div>
+                }
+                <div id="sendMessageContainer" class="d-flex">
+                    <input class="form-control" type="text" id="messageInput" />
+                    <button class="btn btn-primary ml-2" onclick="sendMessage()" id="sendMessage" disabled>Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="roomsModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped" id="roomTable">
+                    <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Select</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="saveRoom()">Save changes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/chat")
+}

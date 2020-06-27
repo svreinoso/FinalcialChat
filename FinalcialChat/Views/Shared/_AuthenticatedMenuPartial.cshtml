@@ -1,0 +1,13 @@
+﻿@using Microsoft.AspNet.Identity
+@if (Request.IsAuthenticated)
+{
+    if (User.IsInRole(FinalcialChat.Models.RolesTypes.Admin))
+    {
+        <li class="nav-item">
+            <a class="nav-link" href="Chatrooms">Rooms</a>
+        </li>
+    }
+    <li class="nav-item">
+        <a class="nav-link" href="Chat">Chats</a>
+    </li>
+}
