@@ -2,6 +2,7 @@
 using FinalcialChat.Interfaces;
 using FinalcialChat.Models;
 using Microsoft.AspNet.Identity;
+using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
 
@@ -12,13 +13,14 @@ namespace FinalcialChat.Controllers
     {
         private readonly IChatServices _chatService;
         private readonly IRoomServices _roomServices;
-
+        public Func<string> GetUserId;
         public ChatController(IChatServices chatService, IRoomServices roomServices)
         {
             _chatService = chatService;
             _roomServices = roomServices;
+            GetUserId = () => User.Identity.GetUserId();
         }
-
+            
         // GET: Chat
         public ActionResult Index(int? chatRoomId, int page = 1)
         {

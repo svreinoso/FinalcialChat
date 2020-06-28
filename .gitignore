@@ -9,6 +9,7 @@
 *.dll.config
 *.cache
 *.suo
+.vs
 # Include dlls if they’re in the NuGet packages directory
 !/packages/*/lib/*.dll
 !/packages/*/lib/*/*.dll
@@ -22,6 +23,8 @@ _UpgradeReport_Files/
 ###############
 # Directories #
 ###############
+FinalcialChat.Test/bin/
+FinalcialChat.Test/obj/
 FinalcialChat/bin/
 FinalcialChat/obj/
 FinalcialChat/TestResults/
