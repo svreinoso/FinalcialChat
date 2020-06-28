@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Hosting;
+using FinalcialChat.Enums;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 
@@ -20,6 +21,7 @@ namespace FinalcialChat.Models
 
         public string  FirstName { get; set; }
         public string  LastName { get; set; }
+        public UserType UserType { get; set; }
 
         public virtual ICollection<Chatroom> Chatrooms { get; set; }
         public virtual ICollection<ChatConnection> Connections { get; set; }

@@ -48,11 +48,10 @@
             <div id="messageList" class="messages border border-secondary h-100 overflow-auto pb-5">
                 @foreach (var message in Model.Messages)
                 {
-                    <div>
+                    <div class="messages-container">
                         <h2>@message.Content</h2>
-                        <div>
-                            <p>@message.CreatedBy</p>
-                            <p>@message.CreatedDate.ToString("MMM-dd-yyyy hh:mm")</p>
+                        <div class="messages-info">
+                            <p>@message.CreatedBy, @message.CreatedDate.ToString("M-dd-yyyy hh:mm")</p>
                         </div>
                     </div>
                 }

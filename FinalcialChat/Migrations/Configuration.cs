@@ -1,5 +1,6 @@
 ﻿namespace FinalcialChat.Migrations
 {
+    using FinalcialChat.Enums;
     using FinalcialChat.Models;
     using Microsoft.AspNet.Identity;
     using Microsoft.AspNet.Identity.EntityFramework;
@@ -38,6 +39,19 @@
                 var password = ConfigurationManager.AppSettings.Get("AdminPassword");
                 manager.Create(user, password);
                 manager.AddToRole(user.Id, RolesTypes.Admin);
+            }
+
+            var chatBotName = "ChatBot1";
+            var chatBot = context.Users.FirstOrDefault(x => x.UserType == UserType.Bot && x.FirstName == chatBotName);
+            if(chatBot == null)
+            {
+                chatBot = new ApplicationUser
+                {
+                    UserName = chatBotName,
+                    FirstName = chatBotName,
+                    UserType = UserType.Bot
+                };
+                manager.Create(chatBot);
             }
         }
     }

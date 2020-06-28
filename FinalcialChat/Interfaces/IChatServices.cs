@@ -9,7 +9,7 @@ namespace FinalcialChat.Interfaces
 {
     public interface IChatServices
     {
-        ChatDto GetChats(string currentUserId, int? chatRoomId);
+        ChatDto GetChats(string currentUserId, int? chatRoomId, int page);
         MessageDto AddMessage(Message message);
         List<string> GetUsersInRoom(int roomId);
     }

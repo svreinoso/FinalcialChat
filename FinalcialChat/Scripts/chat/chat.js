@@ -71,11 +71,10 @@ function addNewMessage(message) {
         ${date.getHours()}:${date.getMinutes()}`;
 
     let html = `
-        <div>
+        <div class="messages-container">
             <h2>${message.Content}</h2>
-            <div>
-                <p>${message.CreatedBy}</p>
-                <p>${formatDate}</p>
+            <div class="message-info">
+                <p>${message.CreatedBy}, ${formatDate}</p>
             </div>
         </div>
     `;
@@ -99,10 +98,13 @@ function sendMessage() {
 
     chat.server.send(data);
     $("#messageInput").focus();
+    $("#sendMessage").prop("disabled", true);
 }
 
 function onImputChange(event) {
-    console.log(event);
+    console.log(event.target.id);
+    if (event.target.id !== 'messageInput') return;
+
     let value = event.target.value;
     let button = $("#sendMessage");
     button.prop("disabled", !value || !chatRoomId)
@@ -123,12 +125,17 @@ function startConnection() {
 }
 
 $(document).ready(() => {
-    $("#messageInput").on("keyup", onImputChange);
+    $("body").on("keyup", onImputChange);
     messageListContainer = document.getElementById('messageList');
 
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     chatRoomId = urlParams.get('chatRoomId')
+
+    if (!chatRoomId) {
+        let rooms = $('.room-name a');
+        rooms && rooms.length > 0 && rooms[0].click();
+    }
     
     updateScrool();
     startConnection();

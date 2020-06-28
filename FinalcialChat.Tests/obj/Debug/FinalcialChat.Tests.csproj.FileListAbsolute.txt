@@ -65,3 +65,5 @@ C:\Users\Samuel\source\repos\FinalcialChat\FinalcialChat.Tests\obj\Debug\Finalci
 C:\Users\Samuel\source\repos\FinalcialChat\FinalcialChat.Tests\obj\Debug\FinalcialChat.Tests.csproj.CopyComplete
 C:\Users\Samuel\source\repos\FinalcialChat\FinalcialChat.Tests\obj\Debug\FinalcialChat.Tests.dll
 C:\Users\Samuel\source\repos\FinalcialChat\FinalcialChat.Tests\obj\Debug\FinalcialChat.Tests.pdb
+C:\Users\Samuel\source\repos\FinalcialChat\FinalcialChat.Tests\bin\Debug\Microsoft.AspNet.SignalR.Core.dll
+C:\Users\Samuel\source\repos\FinalcialChat\FinalcialChat.Tests\bin\Debug\Microsoft.AspNet.SignalR.Core.xml

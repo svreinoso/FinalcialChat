@@ -1,4 +1,6 @@
-﻿using FinalcialChat.Services;
+﻿using Autofac;
+using FinalcialChat.Interfaces;
+using FinalcialChat.Services;
 using Microsoft.AspNet.SignalR;
 using Microsoft.Owin;
 using Owin;
@@ -12,8 +14,17 @@ namespace FinalcialChat
         {
             ConfigureAuth(app);
 
-            GlobalHost.DependencyResolver.Register(typeof(MessageHub), () => new MessageHub(new ChatServices()));
-            app.MapSignalR();
+            var builder = new ContainerBuilder();
+            builder.RegisterType<HttpClientManager>().As<IHttpClientManager>();
+            var container = builder.Build();
+
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var service = scope.Resolve<IHttpClientManager>();
+                GlobalHost.DependencyResolver.Register(typeof(MessageHub), () => new MessageHub(new ChatServices(service)));
+                app.MapSignalR();
+            }
+
         }
     }
 }

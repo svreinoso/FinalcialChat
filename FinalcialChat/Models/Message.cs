@@ -1,4 +1,5 @@
-﻿using FinalcialChat.Interfaces;
+﻿using FinalcialChat.Enums;
+using FinalcialChat.Interfaces;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -11,6 +12,7 @@ namespace FinalcialChat.Models
         [Required]
         public string Content { get; set; }
         [Required]
+        public MessageType MessageType { get; set; }
         public int ChatroomId { get; set; }
         [ForeignKey(nameof(CreatedBy))]
         public virtual ApplicationUser User { get; set; }

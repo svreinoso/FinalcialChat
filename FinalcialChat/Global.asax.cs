@@ -21,6 +21,7 @@ namespace FinalcialChat
             builder.RegisterControllers(typeof(MvcApplication).Assembly);
             builder.RegisterType<ChatServices>().As<IChatServices>();
             builder.RegisterType<RoomServices>().As<IRoomServices>();
+            builder.RegisterType<HttpClientManager>().As<IHttpClientManager>();
             var container = builder.Build();
             DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
         }

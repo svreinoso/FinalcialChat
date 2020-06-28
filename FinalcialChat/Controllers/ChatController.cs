@@ -20,10 +20,10 @@ namespace FinalcialChat.Controllers
         }
 
         // GET: Chat
-        public ActionResult Index(int? chatRoomId)
+        public ActionResult Index(int? chatRoomId, int page = 1)
         {
             var currentUserId = User.Identity.GetUserId();
-            var model = _chatService.GetChats(currentUserId, chatRoomId);
+            var model = _chatService.GetChats(currentUserId, chatRoomId, page);
             model.SelectedRoomId = chatRoomId.HasValue ? chatRoomId.Value : 0;
             return View(model);
         }
