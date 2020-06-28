@@ -22,5 +22,6 @@ namespace FinalcialChat.Models
         public string  LastName { get; set; }
 
         public virtual ICollection<Chatroom> Chatrooms { get; set; }
+        public virtual ICollection<ChatConnection> Connections { get; set; }
     }
 }

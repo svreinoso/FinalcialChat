@@ -22,27 +22,13 @@ namespace FinalcialChat.Models
 
         public DbSet<Chatroom> Chatrooms { get; set; }
         public DbSet<Message> Messages { get; set; }
-        //public DbSet<UserChatroom> UserChatrooms { get; set; }
-
-        //protected override void OnModelCreating(DbModelBuilder modelBuilder)
-        //{
-        //    modelBuilder.Entity<ApplicationUser>()
-        //        .HasMany(x => x.Chatrooms)
-        //        .WithMany(x => x.Users)
-        //        .Map(x =>
-        //        {
-        //            x.ToTable("UserChatrooms");
-        //            x.MapLeftKey("UserId");
-        //            x.MapRightKey("ChatroomId");
-        //        });
-        //}
+        public DbSet<ChatConnection> ChatConnections { get; set; }
 
         public override int SaveChanges()
         {
             UpdateAuditEntities();
             return base.SaveChanges();
         }
-
 
         private void UpdateAuditEntities()
         {

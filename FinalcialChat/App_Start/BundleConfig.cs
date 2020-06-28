@@ -27,7 +27,10 @@ namespace FinalcialChat
                       "~/Content/site.css"));
 
             bundles.Add(new ScriptBundle("~/bundles/chat").Include(
-                      "~/Scripts/chat/chat.js"));
+                      "~/Scripts/jquery.signalR-2.1.0.min.js",
+                      "~/signalr/hubs",
+                      "~/Scripts/chat/chat.js")
+                );
         }
     }
 }

@@ -3,6 +3,7 @@ using FinalcialChat.Interfaces;
 using FinalcialChat.Models;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.Entity;
 
 namespace FinalcialChat.Services
 {
@@ -25,11 +26,25 @@ namespace FinalcialChat.Services
             };
         }
 
+        public List<string> GetUsersInRoom(int roomId)
+        {
+            var users = _dbContext.Chatrooms.Include(x => x.Users)
+                .Where(x => x.Id == roomId)
+                .Select(x => x.Users.Select(u => u.Id)).FirstOrDefault();
+
+            return users.ToList();
+        }
+
         public ChatDto GetChats(string currentUserId, int? chatRoomId)
         {
             var user = _dbContext.Users.Find(currentUserId);
-            var messages = chatRoomId.HasValue ?
-                _dbContext.Messages.Where(x => x.ChatroomId == chatRoomId.Value && x.CreatedBy == currentUserId)
+
+            var chatRooms = user.Chatrooms != null && user.Chatrooms.Any() ?
+                user.Chatrooms.Select(x => new ChatRoomDto { Id = x.Id, Name = x.Name }).ToList() :
+                new List<ChatRoomDto>();
+
+            var messages = chatRoomId.HasValue && chatRooms.Any(x => x.Id == chatRoomId) ?
+                _dbContext.Messages.Where(x => x.ChatroomId == chatRoomId.Value)
                     .Select(x => new MessageDto 
                     { 
                         ChatroomId = x.ChatroomId,
@@ -40,9 +55,6 @@ namespace FinalcialChat.Services
                     }).ToList()
                 : new List<MessageDto>();
 
-            var chatRooms = user.Chatrooms != null && user.Chatrooms.Any() ?
-                user.Chatrooms.Select(x => new ChatRoomDto { Id = x.Id, Name = x.Name }).ToList() :
-                new List<ChatRoomDto>();
 
             return new ChatDto
             {

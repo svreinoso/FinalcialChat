@@ -11,5 +11,6 @@ namespace FinalcialChat.Interfaces
     {
         ChatDto GetChats(string currentUserId, int? chatRoomId);
         MessageDto AddMessage(Message message);
+        List<string> GetUsersInRoom(int roomId);
     }
 }

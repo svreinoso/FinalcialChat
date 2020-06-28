@@ -1,5 +1,5 @@
 ﻿
-var messageListContainer;
+var messageListContainer, chat, chatRoomId;
 
 const get = (path, callback) => {
     fetch(path)
@@ -66,12 +66,16 @@ function saveRoom() {
 }
 
 function addNewMessage(message) {
+    let date = new Date(message.CreatedDate);
+    let formatDate = `${date.getMonth() + 1}-${date.getDate()}-${date.getFullYear()}
+        ${date.getHours()}:${date.getMinutes()}`;
+
     let html = `
         <div>
             <h2>${message.Content}</h2>
             <div>
                 <p>${message.CreatedBy}</p>
-                <p>${message.CreatedDate}</p>
+                <p>${formatDate}</p>
             </div>
         </div>
     `;
@@ -84,29 +88,50 @@ function updateScrool() {
 }
 
 function sendMessage() {
+
     let value = $("#messageInput").val();
     if (!value) return;
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    const chatRoomId = urlParams.get('chatRoomId')
     if (!chatRoomId) return;
     let data = {
         Content: value,
         ChatroomId: chatRoomId
     };
-    post('Chat/AddMessage', data, (newMessage) => {
-        addNewMessage(newMessage);
-    });
+
+    chat.server.send(data);
+    $("#messageInput").focus();
 }
 
 function onImputChange(event) {
+    console.log(event);
     let value = event.target.value;
     let button = $("#sendMessage");
-    button.prop("disabled", !value)
+    button.prop("disabled", !value || !chatRoomId)
+    if (event.keyCode === 13) {
+        sendMessage();
+    }
+}
+
+function startConnection() {
+    chat = $.connection.messageHub;
+    chat.client.addChatMessage = function (newMessage) {
+        addNewMessage(newMessage);
+        $("#messageInput").focus();
+    };
+    $.connection.hub.start().done(function (response) {
+        console.log('connected with id: ' + response.id)
+    });
 }
 
 $(document).ready(() => {
     $("#messageInput").on("keyup", onImputChange);
     messageListContainer = document.getElementById('messageList');
+
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    chatRoomId = urlParams.get('chatRoomId')
+    
     updateScrool();
+    startConnection();
+
+    $("#messageInput").focus();
 });
