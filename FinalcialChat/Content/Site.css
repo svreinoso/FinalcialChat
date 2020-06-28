@@ -29,9 +29,11 @@ textarea {
     margin-bottom: 10px;
     padding-left: 10px;
 }
-.messages-container h2{
-    margin: 0;
-}
+    .messages-container h2 {
+        margin: 0;
+        font-size: 20px;
+        color: blue;
+    }
 .messages-container .messages-info p{
     margin: 0;
 }

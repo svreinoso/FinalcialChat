@@ -47,7 +47,7 @@ namespace FinalcialChat.Models
                 if (entry.State == EntityState.Added)
                 {
                     entity.CreatedDate = now;
-                    entity.CreatedBy = currentUserId;
+                    entity.CreatedBy = string.IsNullOrEmpty(entity.CreatedBy) ? currentUserId : entity.CreatedBy;
                 }
                 else
                 {

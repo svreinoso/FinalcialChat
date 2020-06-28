@@ -1,5 +1,7 @@
-﻿using FinalcialChat.Interfaces;
+﻿using FinalcialChat.Enums;
+using FinalcialChat.Interfaces;
 using FinalcialChat.Models;
+using FinalcialChat.Dtos;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.SignalR;
 using System.Collections.Generic;
@@ -24,16 +26,28 @@ namespace FinalcialChat.Services
         {
             var currentUserId = Context.User.Identity.GetUserId();
             message.CreatedBy = currentUserId;
-            var messageDto = _chatService.AddMessage(message);
+            var messagesDto = _chatService.AddMessage(message);
 
             var users = _chatService.GetUsersInRoom(message.ChatroomId);
             var connections = _dbContext.ChatConnections.Where(x => x.Connected && users.Contains(x.UserAgent))
-                .Select(x => x.ConnectionID).ToList();
+                .Select(x => new { x.ConnectionID, x.UserAgent }).ToList();
 
             foreach (var connectionId in connections)
             {
-                Clients.Client(connectionId).addChatMessage(messageDto);
+                if(connectionId.UserAgent == currentUserId)
+                {
+                    Clients.Client(connectionId.ConnectionID).addChatMessage(messagesDto);
+                } else
+                {
+                    var temp = messagesDto.Where(x => x.MessageType != MessageType.Command);
+                    Clients.Client(connectionId.ConnectionID).addChatMessage(temp);
+                }
             }
+        }
+
+        public override Task OnReconnected()
+        {
+            return base.OnReconnected();
         }
 
         public override Task OnConnected()

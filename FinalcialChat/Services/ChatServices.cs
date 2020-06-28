@@ -20,10 +20,13 @@ namespace FinalcialChat.Services
             _httpClientManager = httpClientManager;
         }
 
-        public MessageDto AddMessage(Message message)
+        public List<MessageDto> AddMessage(Message message)
         {
+            Message commandResultMessage = null;
+            ApplicationUser chatBot = null;
             if(message.Content.StartsWith("/"))
             {
+                message.MessageType = MessageType.Command;
                 var temp = message.Content;
                 temp = temp.Substring(1, temp.Length - 1);
                 var messageParts = temp.Split('=');
@@ -44,26 +47,71 @@ namespace FinalcialChat.Services
                         switch(chatCommand)
                         {
                             case ChatCommand.Stock:
-                                var csvCode = _httpClientManager.Get(code);
-                                var engine = new FileHelperEngine<CsvFields>();
-                                var result = engine.ReadString(csvCode);
+                                try
+                                {
+                                    var csvCode = _httpClientManager.Get(code);
+                                    var engine = new FileHelperEngine<CsvFields>();
+                                    var csvFields = engine.ReadString(csvCode).ToList();
+                                    var row = csvFields.FirstOrDefault();
+                                    chatBot = _dbContext.Users.FirstOrDefault(x => 
+                                        x.UserType == UserType.Bot && x.FirstName == "ChatBot1");
+                                    commandResultMessage = new Message
+                                    {
+                                        Content = $"{row.Symbol} quote is ${row.Open} per share",
+                                        CreatedBy = chatBot.Id,
+                                        ChatroomId = message.ChatroomId,
+                                        MessageType = MessageType.Text
+                                    };
+                                    message.Content += " (Command executed)";
+                                }
+                                catch (Exception ex)
+                                {
+                                    message.Content += " (Error reading the result of this code)";
+                                }
                                 break;
                         }
                     }
                 }
             }
 
-            _dbContext.Messages.Add(message);
+            if(message.MessageType != MessageType.Command)
+            {
+                _dbContext.Messages.Add(message);
+            }
+            if(commandResultMessage != null)
+            {
+                _dbContext.Messages.Add(commandResultMessage);
+            }
             _dbContext.SaveChanges();
             var user = _dbContext.Users.Find(message.CreatedBy);
-            return new MessageDto
+            var result = new List<MessageDto>()
             {
-                Id = message.Id,
-                ChatroomId = message.ChatroomId,
-                Content = message.Content,
-                CreatedBy = user.FirstName + " " + user.LastName,
-                CreatedDate = message.CreatedDate
+                new MessageDto
+                {
+                    Id = message.Id,
+                    ChatroomId = message.ChatroomId,
+                    Content = message.Content,
+                    CreatedBy = user.FirstName + " " + user.LastName,
+                    CreatedDate = message.CreatedDate != null ? message.CreatedDate : DateTimeOffset.Now,
+                    MessageType = message.MessageType
+                },
             };
+
+            if(commandResultMessage != null)
+            {
+                result.Add(
+                new MessageDto
+                {
+                    Id = commandResultMessage.Id,
+                    ChatroomId = commandResultMessage.ChatroomId,
+                    Content = commandResultMessage.Content,
+                    CreatedBy = chatBot.FirstName,
+                    CreatedDate = commandResultMessage.CreatedDate,
+                    MessageType = commandResultMessage.MessageType
+                });
+            }
+
+            return result;
         }
 
         public List<string> GetUsersInRoom(int roomId)
@@ -87,7 +135,9 @@ namespace FinalcialChat.Services
             var skip = (page -1) * pageSize;
 
             var messages = chatRoomId.HasValue && chatRooms.Any(x => x.Id == chatRoomId) ?
-                _dbContext.Messages.Where(x => x.ChatroomId == chatRoomId.Value)
+                _dbContext.Messages.Where(x => x.ChatroomId == chatRoomId.Value && 
+                    (x.MessageType != MessageType.Command || (x.MessageType == MessageType.Command 
+                    && x.CreatedBy == currentUserId)) )
                     .Select(x => new MessageDto 
                     { 
                         ChatroomId = x.ChatroomId,

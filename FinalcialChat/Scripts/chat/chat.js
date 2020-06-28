@@ -65,20 +65,23 @@ function saveRoom() {
     });
 }
 
-function addNewMessage(message) {
-    let date = new Date(message.CreatedDate);
-    let formatDate = `${date.getMonth() + 1}-${date.getDate()}-${date.getFullYear()}
+function addNewMessage(messages) {
+    if (!messages) return;
+    messages.forEach(message => {
+        let date = new Date(message.CreatedDate);
+        let formatDate = `${date.getMonth() + 1}-${date.getDate()}-${date.getFullYear()}
         ${date.getHours()}:${date.getMinutes()}`;
 
-    let html = `
+        let html = `
         <div class="messages-container">
             <h2>${message.Content}</h2>
             <div class="message-info">
                 <p>${message.CreatedBy}, ${formatDate}</p>
             </div>
         </div>
-    `;
-    messageListContainer.innerHTML += html;
+        `;
+        messageListContainer.innerHTML += html;
+    });
     updateScrool();
 }
 
@@ -87,7 +90,6 @@ function updateScrool() {
 }
 
 function sendMessage() {
-
     let value = $("#messageInput").val();
     if (!value) return;
     if (!chatRoomId) return;
@@ -98,11 +100,11 @@ function sendMessage() {
 
     chat.server.send(data);
     $("#messageInput").focus();
+    $("#messageInput").val('');
     $("#sendMessage").prop("disabled", true);
 }
 
 function onImputChange(event) {
-    console.log(event.target.id);
     if (event.target.id !== 'messageInput') return;
 
     let value = event.target.value;
@@ -117,7 +119,6 @@ function startConnection() {
     chat = $.connection.messageHub;
     chat.client.addChatMessage = function (newMessage) {
         addNewMessage(newMessage);
-        $("#messageInput").focus();
     };
     $.connection.hub.start().done(function (response) {
         console.log('connected with id: ' + response.id)

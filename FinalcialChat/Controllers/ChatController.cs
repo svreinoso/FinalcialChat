@@ -43,11 +43,5 @@ namespace FinalcialChat.Controllers
             return Json(new { }, JsonRequestBehavior.AllowGet);
         }
 
-        [HttpPost]
-        public ActionResult AddMessage(Message message)
-        {
-            MessageDto messageDto = _chatService.AddMessage(message);
-            return Json(messageDto, JsonRequestBehavior.AllowGet);
-        }
     }
 }
